@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+    <script src="exam2015.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body>
+    <h3 id="score"></h3>
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+    <script>
+        var canvas = null,
+            ctx = null,
+            perSecond = 1000 / 30,
+            ballX = 200,
+            ballY = 0,
+            ballYSpeed = 3,
+            choosenColor = randomWithProbability(),
+            score = 0,
+            paddleX = 300;
+        const PADDLE_WIDTH = 100;
+        const PADDLE_HEIGHT = 10;
+        const PADDALE_FROM_EDAGE = 60;
+
+        //keyboard move
+        window.addEventListener("keydown", keysPressed, false);
+        window.addEventListener("keyup", keysReleased, false);
+        var keys = [];
+
+        function keysPressed(e) {
+            // store an entry for every key pressed
+            keys[e.keyCode] = true;
+            // left
+            if (keys[37]) {
+                paddleX -= 2;
+
+            }
+            // right
+            if (keys[39]) {
+                paddleX += 2;
+            }
+            drawAll();
+        }
+
+        function keysReleased(e) {
+            // mark keys that were released
+            keys[e.keyCode] = false;
+        }
+
+
+        window.onload = function () {
+            canvas = document.getElementById("canvas");
+            paddleX = canvas.width / 2;
+            ctx = canvas.getContext("2d");
+            //drawAll();
+            setInterval(update, perSecond);
+            setTimeout(myFunction, 30000);
+
+        }
+
+        function myFunction() {
+            if (score >= 20) {
+                alert('WINNER!');
+            }
+            else {
+                alert('YOU LOST!')
+            }
+            document.location.reload();
+
+        }
+        function update() {
+            moveAll();
+            drawAll();
+        }
+        function drawAll() {
+            colorBox("#000", 0, 0, canvas.width, canvas.height);
+            circle(choosenColor, ballX, ballY, 10);
+            colorBox("#fff", paddleX, canvas.height - PADDALE_FROM_EDAGE, PADDLE_WIDTH, PADDLE_HEIGHT);
+            ctx.font = "30px Comic Sans MS";
+            ctx.fillStyle = "red";
+            ctx.textAlign = "center";
+            ctx.fillText('Your current score is:' + score, 180, 40);
+        }
+
+        function colorBox(color, x, y, width, height) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+        }
+
+        function circle(color, x, y, radius) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function moveAll() {
+            var paddleTopY = canvas.height - PADDALE_FROM_EDAGE;
+            var paddleBottomY = paddleTopY + PADDLE_HEIGHT;
+            var paddleLeftX = paddleX;
+            var paddleRightX = paddleLeftX + PADDLE_WIDTH;
+            ballY += ballYSpeed;
+            if (ballX < paddleRightX && ballX > paddleLeftX && ballY > paddleTopY && ballY < paddleBottomY) {
+                if (choosenColor == "blue") {
+                    score += 5;
+                }
+                else {
+                    score += 20;
+                }
+                
+                choosenColor = randomWithProbability();
+                ballY = 0;
+                ballX = Math.floor(Math.random() * Math.floor(canvas.width));
+
+            }
+            else if (ballY == canvas.height) {
+                choosenColor = randomWithProbability();
+                ballY = 0;
+                ballX = Math.floor(Math.random() * Math.floor(canvas.width));
+            }
+            console.log(score);
+        }
+        //1 is blue 2 is red
+        function randomWithProbability() {
+            var notRandomNumbers = [1, 1, 1, 1, 1, 1, 1, 1, 2, 2];
+            var idx = Math.floor(Math.random() * notRandomNumbers.length);
+            if (notRandomNumbers[idx] == '1') {
+                return "blue";
+            }
+            else {
+                return "red";
+            }
+        }
+
+    </script>
+</body>
+
+</html>

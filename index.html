@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>canvas</title>
+    </head>
+    <body>
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <script>
+            var canvas = null,
+            ctx = null,
+            perSecond =1000/30,
+            ballX = 2,
+            ballY = 2,
+            ballXSpeed = 5,
+            ballYSpeed = 6;
+           
+            paddleX=100;
+            const PADDLE_WIDTH=100;
+            const PADDLE_HEIGHT=10;
+            const PADDALE_FROM_EDAGE=60;
+
+            
+            function mousePos(evt){
+                var rect= canvas.getBoundingClientRect();
+                var root= document.documentElement;
+                var mouseX=evt.clientX -rect.left -root.scrollLeft;
+                paddleX=mouseX;
+            }
+
+            window.onload = function () {
+                canvas = document.getElementById("canvas");
+                paddleX=canvas.width/2;
+                ctx = canvas.getContext("2d");
+                ctx.fillStyle="#ff66cc";
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                setInterval(update,perSecond);
+                canvas.addEventListener("mousemove",mousePos);
+            }
+           
+            function update() {
+                moveAll();
+                drawAll();
+            }
+           
+            function ballReset(){
+                ballX=canvas.width/2;
+                ballY=canvas.height/2;
+            }
+
+            function moveAll() {
+                ballX += ballXSpeed;
+                ballY += ballYSpeed;
+
+
+             
+                if (ballX > canvas.width) {
+                    ballXSpeed *= -1;
+                }
+                if (ballX < 0) {
+                    ballXSpeed *= -1;
+                }
+                if (ballY > canvas.height) {//bottum
+                   ballReset();
+                }
+                if (ballY < 0) {
+                    ballYSpeed *= -1;
+                }
+                var paddleTopY=canvas.height-PADDALE_FROM_EDAGE;
+                var paddleBottomY=paddleTopY+PADDLE_HEIGHT;
+                var paddleLeftX=paddleX;
+                var paddleRightX=paddleLeftX+PADDLE_WIDTH;
+             
+                if(ballX<paddleRightX && ballX>paddleLeftX && ballY>paddleTopY && ballY<paddleBottomY){
+                     ballYSpeed*=-1;
+                }
+            }
+           
+            function drawAll() {
+                colorBox("#000",0,0,canvas.width,canvas.height);
+                circle("#fff",ballX,ballY,10);
+                colorBox("#fff",paddleX,canvas.height-PADDALE_FROM_EDAGE,PADDLE_WIDTH,PADDLE_HEIGHT);
+
+            }
+           
+            function colorBox(color,x,y,width,height) {
+                ctx.fillStyle=color;
+                ctx.fillRect(x,y,width,height);
+            }
+           
+            function circle(color,x,y,radius) {
+                ctx.beginPath();
+                ctx.fillStyle=color;
+                ctx.arc(x,y,radius,0,Math.PI*2);
+                ctx.fill();
+            }
+           
+        </script>
+    </body>
+</html>
